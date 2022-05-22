@@ -5,6 +5,8 @@ import Card from "./Card";
 class CardList extends Component {
     render() {
         const { wordArr, eng, rus } = this.props;
+        console.log(wordArr);
+
         return (
             <>
                 <form
@@ -32,6 +34,7 @@ class CardList extends Component {
                 <div className={s.card_list}>
                     {wordArr.map(({ eng, rus, id }) => (
                         <Card
+                            onSpeech={this.props.onSpeech}
                             onDeleted={this.props.onDeletedItem}
                             id={id}
                             key={id}

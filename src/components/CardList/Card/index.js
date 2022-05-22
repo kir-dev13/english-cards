@@ -1,7 +1,11 @@
 import React from "react";
 import s from "./Card.module.scss";
 import cl from "classnames";
-import { CheckSquareOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+    CheckSquareOutlined,
+    DeleteOutlined,
+    SoundOutlined,
+} from "@ant-design/icons";
 
 class Card extends React.Component {
     state = {
@@ -41,6 +45,11 @@ class Card extends React.Component {
         this.props.onDeleted(id);
     };
 
+    handleSpeech = () => {
+        const { id } = this.props;
+        this.props.onSpeech(id);
+    };
+
     render() {
         const { eng, rus } = this.props;
         const { done } = this.state;
@@ -65,6 +74,9 @@ class Card extends React.Component {
                 </div>
                 <div className={s.icon}>
                     <DeleteOutlined onClick={this.handleDeletedClick} />
+                </div>
+                <div className={s.icon}>
+                    <SoundOutlined onClick={this.handleSpeech} />
                 </div>
             </div>
         );
