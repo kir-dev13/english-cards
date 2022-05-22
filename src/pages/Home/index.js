@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 
 import database from "../../services/firebase";
 
@@ -27,6 +27,8 @@ const Home = (props) => {
 
     const urlRequest = `/cards/${props.user.uid}`;
 
+    const firstUpdate = useRef(true);
+
     const { speak, voices } = useSpeechSynthesis();
 
     useEffect(() => {
@@ -39,18 +41,17 @@ const Home = (props) => {
         });
     }, []);
 
+    useLayoutEffect(() => {
+        if (firstUpdate.current) {
+            firstUpdate.current = false;
+        } else {
+            database.ref(urlRequest).set(wordArr);
+        }
+    }, [wordArr]);
+
     const resetForm = () => {
         setRus("");
         setEng("");
-    };
-
-    const setNewWord = (newWord) => {
-        console.log("setNewWord", newWord);
-        if (!Array.isArray(newWord)) {
-            database.ref(urlRequest).set([...wordArr, newWord]);
-        } else {
-            database.ref(urlRequest).set([...newWord]);
-        }
     };
 
     const handleInputChange = (e) => {
@@ -62,51 +63,50 @@ const Home = (props) => {
         }
     };
 
+    const checkField = async (field) => {
+        const translate = field === eng ? rus : eng;
+        const interpretator = translate === rus ? "ru-en" : "en-ru";
+        if (!field) {
+            let result = await getTranslateWord(translate, interpretator).then(
+                (res) => {
+                    if (res.status) {
+                        console.log("что-то пошло не так");
+                    } else {
+                        console.log(res);
+                        return res.translate;
+                    }
+                }
+            );
+            return result;
+        }
+    };
+
     const handleSubmitForm = async (e) => {
         e.preventDefault();
-        let getWord;
-        if (!eng) {
-            console.log("введит английское слово");
+        const getWord = {};
+        if (!eng && !rus) {
+            console.log("заполните хотя бы одно поле");
         } else {
-            if (!rus) {
-                getWord = await getTranslateWord(eng);
-                console.log("получили слово: ", getWord);
-                if (getWord.status !== 400) {
-                    console.log("статус");
-
-                    // await setRus(getWord.translate);
-                } else {
-                    console.log("не смог получить перевод");
-                    return;
-                }
-            }
-            console.log(rus);
-
+            await checkField(eng).then((res) => (getWord.eng = res));
+            await checkField(rus).then((res) => (getWord.rus = res));
+            console.log(getWord);
             const newWord = await {
-                eng: eng,
-                rus: rus || getWord.translate,
+                eng: eng || getWord.eng,
+                rus: rus || getWord.rus,
                 id: +new Date(),
             };
-            console.log("newWord: ", newWord);
-            console.log("rus ", rus);
-
-            await setNewWord(newWord);
+            setWordArr([...wordArr, newWord]);
             resetForm();
         }
     };
 
-    const handleDeletedItem = async (id) => {
+    const handleDeletedItem = (id) => {
         const newWordArr = wordArr.filter((item) => item.id !== id);
-        await setWordArr(newWordArr);
-        await console.log(wordArr);
-
-        await setNewWord(newWordArr);
+        setWordArr(newWordArr);
     };
 
     const onSpeech = (id) => {
         const word = wordArr.find((word) => word.id === id);
-        console.log(word.eng);
-
         speak({ text: word.eng, voice: voices[11] });
     };
 
@@ -173,164 +173,3 @@ const Home = (props) => {
 };
 
 export default Home;
-
-class HomeOld extends Component {
-    state = {
-        wordArr: [],
-        rus: "",
-        eng: "",
-    };
-
-    urlRequest = `/cards/${this.props.user.uid}`;
-
-    componentDidMount() {
-        database.ref(this.urlRequest).on("value", (res) => {
-            this.setState({
-                wordArr: res.val() || [],
-            });
-        });
-        // .then();
-    }
-
-    resetForm = () => {
-        this.setState({
-            wordArr: this.wordArr,
-            rus: "",
-            eng: "",
-        });
-    };
-
-    setNewWord = (newWord = null) => {
-        console.log("setNewWord", newWord);
-        if (newWord) {
-            database.ref(this.urlRequest).set([...this.wordArr, newWord]);
-        } else {
-            database.ref(this.urlRequest).set([...this.wordArr]);
-        }
-    };
-
-    handleInputChange = (e) => {
-        if (e.target.getAttribute("name") === "rus") {
-            this.setState({
-                rus: e.target.value,
-            });
-        }
-        if (e.target.getAttribute("name") === "eng") {
-            this.setState({
-                eng: e.target.value,
-            });
-        }
-    };
-
-    handleSubmitForm = async (e) => {
-        console.log("click");
-
-        e.preventDefault();
-        if (!this.eng) {
-            console.log("введит английское слово");
-        } else {
-            if (!this.rus) {
-                const getWord = await getTranslateWord(this.eng);
-                console.log("getWord: ", getWord);
-                if (getWord.status !== 400) {
-                    await this.setState({
-                        rus: getWord.translate,
-                    });
-                } else {
-                    console.log("не смог получить перевод");
-                }
-            }
-            const newWord = {
-                eng: this.eng,
-                rus: this.rus,
-                id: +new Date(),
-            };
-            console.log("newWord: ", newWord);
-
-            await this.setNewWord(newWord);
-            this.resetForm();
-        }
-    };
-
-    handleDeletedItem = async (id) => {
-        await this.setState(({ wordArr }) => {
-            // const idx = wordArr.findIndex((item) => item.id === id);
-            const newWordArr = wordArr.filter((item) => item.id !== id);
-            return {
-                wordArr: newWordArr,
-            };
-        });
-        this.setNewWord();
-    };
-
-    onSpeech = (id) => {
-        const word = this.wordArr.find((word) => word.id === id);
-        console.log(word);
-    };
-
-    click() {
-        console.log("click");
-    }
-
-    render() {
-        const { wordArr } = this.state;
-        console.log(this.props.user.uid);
-
-        return (
-            <>
-                {/* <BackGroundBlock backgroundImg={firstBackground} fullHeight>
-                    <SectionBlock>
-                        <Header white>Время учить слова онлайн</Header>
-                        <Paragraph white>
-                            Используй карточки для запоминания и пополняй
-                            словарный запас
-                        </Paragraph>
-                    </SectionBlock>
-                </BackGroundBlock> */}
-
-                {/* <SectionBlock>
-                    <Header size="m">
-                        Тренируй память и развивай английский
-                    </Header>
-                    <SectionBlock row>
-                        <Paragraph>
-                            <ClockCircleOutlined className={s.icon} />В любое
-                            время
-                        </Paragraph>
-                        <Paragraph>
-                            <HomeOutlined className={s.icon} />
-                            Из любого места
-                        </Paragraph>
-                        <Paragraph>
-                            <SmileOutlined className={s.icon} />
-                            Регулярно
-                        </Paragraph>
-                    </SectionBlock>
-                </SectionBlock> */}
-                <SectionBlock backgroundColor="lightgrey">
-                    <Header size="s">Список слов</Header>
-                    <Paragraph>
-                        Нажимай на карточки и узнавай перевод новых слов
-                    </Paragraph>
-                    <CardList
-                        wordArr={wordArr}
-                        onSpeech={this.onSpeech}
-                        onDeletedItem={this.handleDeletedItem}
-                        onSubmit={this.handleSubmitForm}
-                        onChange={this.handleInputChange}
-                        eng={this.eng}
-                        rus={this.rus}
-                    />
-                </SectionBlock>
-                <BackGroundBlock backgroundImg={footerBackground}>
-                    <FooterBlock>
-                        <Header opacity uppercase size="s">
-                            english language
-                        </Header>
-                        <Button onClick={this.click}>Начать уроки</Button>
-                    </FooterBlock>
-                </BackGroundBlock>
-            </>
-        );
-    }
-}

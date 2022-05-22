@@ -10,7 +10,6 @@ const getTranslateWord = async (text, lang = "en-ru") => {
         }
     );
     const body = await res.json();
-
     return body;
 };
 

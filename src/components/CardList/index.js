@@ -5,8 +5,6 @@ import Card from "./Card";
 class CardList extends Component {
     render() {
         const { wordArr, eng, rus } = this.props;
-        console.log(wordArr);
-
         return (
             <>
                 <form
