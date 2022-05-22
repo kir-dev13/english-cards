@@ -1,0 +1,17 @@
+.paragraph {
+    // color: white;
+    // min-width: 100px;
+    flex-basis: 30%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 15px 0 30px 0;
+    font-size: 20px;
+    line-height: 1.55;
+    position: relative;
+    z-index: 2;
+}
+
+.whiteColor {
+    color: white;
+}
