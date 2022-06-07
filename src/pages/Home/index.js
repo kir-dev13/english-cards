@@ -1,7 +1,12 @@
 import React, { Component } from "react";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
-
-import database from "../../services/firebase";
+import {
+    useState,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useContext,
+} from "react";
+import firebaseContext from "../../context/firebaseContext";
 
 import { useSpeechSynthesis } from "react-speech-kit";
 
@@ -24,6 +29,7 @@ const Home = (props) => {
     const [wordArr, setWordArr] = useState([]);
     const [rus, setRus] = useState("");
     const [eng, setEng] = useState("");
+    const { database, auth, getUserCardsRef } = useContext(firebaseContext);
 
     const urlRequest = `/cards/${props.user.uid}`;
 
@@ -32,7 +38,7 @@ const Home = (props) => {
     const { speak, voices } = useSpeechSynthesis();
 
     useEffect(() => {
-        database.ref(urlRequest).on("value", (res) => {
+        getUserCardsRef().on("value", (res) => {
             if (Array.isArray(res.val())) {
                 setWordArr(res.val());
             } else if (res.val()) {
@@ -45,7 +51,7 @@ const Home = (props) => {
         if (firstUpdate.current) {
             firstUpdate.current = false;
         } else {
-            database.ref(urlRequest).set(wordArr);
+            getUserCardsRef().set(wordArr);
         }
     }, [wordArr]);
 
@@ -90,13 +96,17 @@ const Home = (props) => {
             await checkField(eng).then((res) => (getWord.eng = res));
             await checkField(rus).then((res) => (getWord.rus = res));
             console.log(getWord);
-            const newWord = await {
-                eng: eng || getWord.eng,
-                rus: rus || getWord.rus,
-                id: +new Date(),
-            };
-            setWordArr([...wordArr, newWord]);
-            resetForm();
+            if ((rus || getWord.rus) && (eng || getWord.eng)) {
+                const newWord = {
+                    eng: eng || getWord.eng,
+                    rus: rus || getWord.rus,
+                    id: +new Date(),
+                };
+                setWordArr([...wordArr, newWord]);
+                resetForm();
+            } else {
+                console.log("не случилось =(");
+            }
         }
     };
 
@@ -110,8 +120,10 @@ const Home = (props) => {
         speak({ text: word.eng, voice: voices[11] });
     };
 
-    const click = () => {
+    const handleSignOut = () => {
         console.log("click");
+
+        auth.signOut();
     };
 
     return (
@@ -165,7 +177,7 @@ const Home = (props) => {
                     <Header opacity uppercase size="s">
                         english language
                     </Header>
-                    <Button onClick={click}>Начать уроки</Button>
+                    <Button onClick={handleSignOut}>Выйти</Button>
                 </FooterBlock>
             </BackGroundBlock>
         </>

@@ -54,7 +54,6 @@ class Card extends React.Component {
         const { eng, rus } = this.props;
         const { done } = this.state;
         const { isRemembered } = this.state;
-
         return (
             <div className={s.root}>
                 <div

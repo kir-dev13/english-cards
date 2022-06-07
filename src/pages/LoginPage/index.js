@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { fire } from "../../services/firebase";
+import firebaseContext from "../../context/firebaseContext";
 
 import { Layout, Form, Input, Button } from "antd";
 
@@ -7,21 +8,26 @@ import s from "./LoginPage.module.scss";
 
 const { Content } = Layout;
 
-export default class LoginPage extends Component {
+class LoginPage extends Component {
     state = {
         reg: false,
+        appState: "",
+    };
+
+    onError = (text) => {
+        this.setState({ ...this.state, appState: text });
     };
 
     toggleLogReg = () => {
         this.setState((prevState) => ({
             reg: !prevState.reg,
+            appState: "",
         }));
     };
 
     onFinishAuth = ({ email, password }) => {
-        fire.auth()
-            .signInWithEmailAndPassword(email, password)
-            .then((res) => console.log(res));
+        const { signWithEmail } = this.context;
+        signWithEmail(email, password, this.onError);
     };
 
     onFinishFailedAuth = (errorInfo) => {
@@ -63,7 +69,7 @@ export default class LoginPage extends Component {
                         },
                     ]}
                 >
-                    <Input.Password />
+                    <Input.Password autoComplete="off" />
                 </Form.Item>
 
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -71,18 +77,16 @@ export default class LoginPage extends Component {
                         Войти
                     </Button>
                 </Form.Item>
+                {this.state.appState ? (
+                    <span>{this.state.appState}</span>
+                ) : null}
             </Form>
         );
     }
 
     onFinishReg = ({ email, password, passwordRepeat }) => {
-        if (password === passwordRepeat) {
-            fire.auth()
-                .createUserWithEmailAndPassword(email, password)
-                .then((res) => console.log(res));
-        } else {
-            console.log("пароли не совпадают");
-        }
+        const { registerWithEmail } = this.context;
+        registerWithEmail(email, password, passwordRepeat, this.onError);
     };
 
     onFinishFailedReg = (errorInfo) => {
@@ -143,6 +147,9 @@ export default class LoginPage extends Component {
                         Зарегистрироваться
                     </Button>
                 </Form.Item>
+                {this.state.appState ? (
+                    <span>{this.state.appState}</span>
+                ) : null}
             </Form>
         );
     }
@@ -173,3 +180,7 @@ export default class LoginPage extends Component {
         );
     }
 }
+
+LoginPage.contextType = firebaseContext;
+
+export default LoginPage;

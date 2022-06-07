@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/auth";
+
 import "firebase/database";
 
 const firebaseConfig = {
@@ -12,10 +13,42 @@ const firebaseConfig = {
     appId: "1:1014849879567:web:e96292008860d773b5ad7a",
 };
 
-firebase.initializeApp(firebaseConfig);
+class Firebase {
+    constructor() {
+        firebase.initializeApp(firebaseConfig);
 
-export const fire = firebase;
+        this.auth = firebase.auth();
+        this.database = firebase.database();
+        this.userUid = null;
+    }
 
-const database = fire.database();
+    setUserUid = (uid) => (this.userUid = uid);
 
-export default database;
+    signWithEmail = (email, password, onError) => {
+        this.auth.signInWithEmailAndPassword(email, password).catch((err) => {
+            console.log(err);
+            onError(err.message);
+        });
+    };
+
+    registerWithEmail = (email, password, passwordRepeat, onError) => {
+        if (password === passwordRepeat) {
+            this.auth
+                .createUserWithEmailAndPassword(email, password)
+                .catch((err) => onError(err.message));
+        } else {
+            onError("пароли не совпадают");
+        }
+    };
+    getUserCardsRef = () => {
+        return this.database.ref(`/cards/${this.userUid}`);
+    };
+}
+
+// export const fire = firebase;
+
+// const database = fire.database();
+
+// export default database;
+
+export default Firebase;

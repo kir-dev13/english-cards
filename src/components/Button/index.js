@@ -1,10 +1,10 @@
 import React from "react";
 import s from "./Button.module.sass";
 
-const Button = ({ children, onCloack }) => {
+const Button = ({ children, onClick }) => {
     return (
         <>
-            <button onClick={onCloack} className={s.btn}>
+            <button onClick={onClick} className={s.btn}>
                 {children}
             </button>
         </>
