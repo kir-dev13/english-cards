@@ -4,13 +4,13 @@ import "firebase/auth";
 import "firebase/database";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDLjRSmdXrPPbfrn3dAmLNDe2fwrUV0ZcE",
-    authDomain: "learn-the-words-ac562.firebaseapp.com",
-    databaseURL: "https://learn-the-words-ac562-default-rtdb.firebaseio.com",
-    projectId: "learn-the-words-ac562",
-    storageBucket: "learn-the-words-ac562.appspot.com",
-    messagingSenderId: "1014849879567",
-    appId: "1:1014849879567:web:e96292008860d773b5ad7a",
+    apiKey: process.env.REACT_FIREBASE_API_KEY,
+    authDomain: process.env.REACT_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.REACT_FIREBASE_API_DATABASE_URL,
+    projectId: process.env.REACT_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.REACT_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.REACT_FIREBASE_APP_ID,
 };
 
 class Firebase {
