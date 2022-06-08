@@ -4,7 +4,9 @@
     justify-content: space-between;
     width: 250px;
     margin-bottom: 32px;
-    margin-right: 12px;
+    // margin-right: 12px;
+    margin-right: auto;
+    // margin-left: auto;
     &:last-child {
     }
 }
