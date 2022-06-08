@@ -1,9 +1,10 @@
-.card_list {
+.root {
     margin: 50px auto;
     display: flex;
-    justify-content: center;
-    width: 60%;
+    justify-content: space-around;
+    width: 80%;
     flex-wrap: wrap;
+    justify-items: flex-start;
 }
 .form {
     // margin-bottom: 24px;
@@ -13,5 +14,11 @@
     * {
         margin-bottom: 15px;
         padding: 5px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .root {
+        width: 100%;
     }
 }

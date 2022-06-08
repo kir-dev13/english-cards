@@ -47,7 +47,8 @@ class Card extends React.Component {
 
     handleSpeech = () => {
         const { id } = this.props;
-        this.props.onSpeech(id);
+        const { done } = this.state;
+        this.props.onSpeech(id, done);
     };
 
     render() {
@@ -68,14 +69,21 @@ class Card extends React.Component {
                         <div className={s.cardBack}>{rus}</div>
                     </div>
                 </div>
-                <div className={s.icon}>
-                    <CheckSquareOutlined onClick={this.handleIsRememberClick} />
-                </div>
-                <div className={s.icon}>
-                    <DeleteOutlined onClick={this.handleDeletedClick} />
-                </div>
-                <div className={s.icon}>
-                    <SoundOutlined onClick={this.handleSpeech} />
+                <div className={s.iconsContainer}>
+                    <CheckSquareOutlined
+                        className={s.icon}
+                        onClick={this.handleIsRememberClick}
+                    />
+
+                    <DeleteOutlined
+                        className={s.icon}
+                        onClick={this.handleDeletedClick}
+                    />
+
+                    <SoundOutlined
+                        className={s.icon}
+                        onClick={this.handleSpeech}
+                    />
                 </div>
             </div>
         );

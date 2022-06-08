@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import s from "./CardList.module.scss";
 import Card from "./Card";
+import s from "./CardList.module.scss";
 
 class CardList extends Component {
     render() {
@@ -21,15 +21,15 @@ class CardList extends Component {
                     />
                     <input
                         autoComplete="off"
-                        placeholder="введите перевод слова"
+                        placeholder="впишите слово на русском"
                         name="rus"
                         type="text"
                         onChange={(e) => this.props.onChange(e)}
                         value={rus}
                     />
-                    <button>Add word</button>
+                    <button>Добавить слово</button>
                 </form>
-                <div className={s.card_list}>
+                <div className={s.root}>
                     {wordArr.map(({ eng, rus, id }) => (
                         <Card
                             onSpeech={this.props.onSpeech}

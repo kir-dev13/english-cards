@@ -8,14 +8,13 @@ import {
 } from "react";
 import firebaseContext from "../../context/firebaseContext";
 
-// import { useSpeechSynthesis } from "react-speech-kit";
+import { useSpeechSynthesis } from "react-speech-kit";
 
 import BackGroundBlock from "../../components/BackGroundBlock";
 import Header from "../../components/Header";
 import Paragraph from "../../components/Paragraph";
 import FooterBlock from "../../components/FooterBlock";
 import CardList from "../../components/CardList";
-import wordsList from "../../components/WordsList";
 import getTranslateWord from "../../services/dictionary";
 
 import SectionBlock from "../../components/SectionBlock";
@@ -31,11 +30,9 @@ const Home = (props) => {
     const [eng, setEng] = useState("");
     const { database, auth, getUserCardsRef } = useContext(firebaseContext);
 
-    const urlRequest = `/cards/${props.user.uid}`;
-
     const firstUpdate = useRef(true);
 
-    // const { speak, voices } = useSpeechSynthesis();
+    const { speak, voices } = useSpeechSynthesis();
 
     useEffect(() => {
         getUserCardsRef().on("value", (res) => {
@@ -115,11 +112,12 @@ const Home = (props) => {
         setWordArr(newWordArr);
     };
 
-    const onSpeech = (id) => {
-        console.log("это здесь");
-
-        // const word = wordArr.find((word) => word.id === id);
-        // speak({ text: word.eng, voice: voices[11] });
+    const onSpeech = (id, done) => {
+        const word = wordArr.find((word) => word.id === id);
+        const speech = done
+            ? { lang: word.rus, voice: voices[0] }
+            : { lang: word.eng, voice: voices[11] };
+        speak({ text: speech.lang, voice: speech.voice });
     };
 
     const handleSignOut = () => {
@@ -160,9 +158,11 @@ const Home = (props) => {
                     </SectionBlock>
                 </SectionBlock> */}
             <SectionBlock backgroundColor="lightgrey">
-                <Header size="s">Список слов</Header>
+                <Header size="s">Запоминаем английские слова</Header>
                 <Paragraph>
-                    Нажимай на карточки и узнавай перевод новых слов
+                    Чтобы добавить карточку, впишите слово в форму ниже на
+                    русском или английском языке в соответствующее поле ввода и
+                    нажмите "Добавить слово"
                 </Paragraph>
                 <CardList
                     wordArr={wordArr}
