@@ -8,7 +8,7 @@ import {
 } from "react";
 import firebaseContext from "../../context/firebaseContext";
 
-// import { useSpeechSynthesis } from "react-speech-kit";
+import { useSpeechSynthesis } from "react-speech-kit";
 
 import BackGroundBlock from "../../components/BackGroundBlock";
 import Header from "../../components/Header";
@@ -35,7 +35,7 @@ const Home = (props) => {
 
     const firstUpdate = useRef(true);
 
-    // const { speak, voices } = useSpeechSynthesis();
+    const { speak, voices } = useSpeechSynthesis();
 
     useEffect(() => {
         getUserCardsRef().on("value", (res) => {
@@ -118,8 +118,8 @@ const Home = (props) => {
     const onSpeech = (id) => {
         console.log("это здесь");
 
-        // const word = wordArr.find((word) => word.id === id);
-        // speak({ text: word.eng, voice: voices[11] });
+        const word = wordArr.find((word) => word.id === id);
+        speak({ text: word.eng, voice: voices[11] });
     };
 
     const handleSignOut = () => {
