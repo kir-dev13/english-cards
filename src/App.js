@@ -1,18 +1,19 @@
-import React, { Component, useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { fire } from "./services/firebase";
-import firebaseContext from "./context/firebaseContext";
+import { firebaseContext } from "./context/context";
 
 import { Spin } from "antd";
 
+import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
-
+import { appContext } from "./context/context";
 import "antd/dist/antd.css";
 import s from "./App.module.scss";
 
-
 const App = () => {
+    const [langsArr, setLangsArr] = useState(["ru", "en"]);
     const [user, setUser] = useState(null);
     const { auth, setUserUid } = useContext(firebaseContext);
 
@@ -35,7 +36,18 @@ const App = () => {
             </div>
         );
     }
-    return <>{user ? <Home user={user} /> : <LoginPage />}</>;
+    return (
+        <appContext.Provider value={[langsArr, setLangsArr]}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Layout />}>
+                        <Route index element={<Home />} />
+                        <Route path="login" element={<LoginPage />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </appContext.Provider>
+    );
 };
 
 export default App;

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { fire } from "../../services/firebase";
-import firebaseContext from "../../context/firebaseContext";
+import { firebaseContext } from "../../context/context";
 
 import { Layout, Form, Input, Button } from "antd";
 

@@ -6,12 +6,12 @@ import React, {
     useContext,
 } from "react";
 
-import firebaseContext from "../../context/firebaseContext";
+import { firebaseContext, appContext } from "../../context/context";
 
-import { useSpeechSynthesis } from "react-speech-kit";
+import useVoices from "../../hooks/useVoices";
 
 import BackGroundBlock from "../../components/BackGroundBlock";
-import Header from "../../components/Header";
+import Head from "../../components/Head";
 import Paragraph from "../../components/Paragraph";
 import FooterBlock from "../../components/FooterBlock";
 import CardList from "../../components/CardList";
@@ -24,14 +24,18 @@ import firstBackground from "../../assets/background.jpg";
 import s from "./Home.module.scss";
 
 const Home = () => {
+    const [langArr, setLangsArr] = useContext(appContext);
+    const [availableVoices, speak] = useVoices(langArr);
+
+    const [customVoiceRus, setCustomVoicesRus] = useState(null);
+    const [customVoiceEng, setCustomVoicesEng] = useState(null);
+
     const [wordArr, setWordArr] = useState([]);
 
     const { database, userUid, auth, getUserCardsRef } =
         useContext(firebaseContext);
 
     const firstUpdate = useRef(true);
-
-    const { speak, voices } = useSpeechSynthesis();
 
     useEffect(() => {
         getUserCardsRef().on("value", (res) => {
@@ -60,12 +64,22 @@ const Home = () => {
         setWordArr(newWordArr);
     };
 
-    const onSpeech = (id, done) => {
+    const onSpeech = async (id, done) => {
         const word = wordArr.find((word) => word.id === id);
         const speech = done
-            ? { lang: word.rus, voice: voices[0] }
-            : { lang: word.eng, voice: voices[11] };
-        speak({ text: speech.lang, voice: speech.voice });
+            ? {
+                  lang: word.rus,
+                  voice:
+                      customVoiceRus ||
+                      availableVoices.find((item) => item.lang === "ru").voice,
+              }
+            : {
+                  lang: word.eng,
+                  voice:
+                      customVoiceEng ||
+                      availableVoices.find((item) => item.lang === "en").voice,
+              };
+        speak(speech.lang, speech.voice);
     };
 
     const handleSignOut = () => {
@@ -78,7 +92,7 @@ const Home = () => {
         <>
             {/* <BackGroundBlock backgroundImg={firstBackground} fullHeight>
                     <SectionBlock>
-                        <Header white>Время учить слова онлайн</Header>
+                        <Head white>Время учить слова онлайн</Head>
                         <Paragraph white>
                             Используй карточки для запоминания и пополняй
                             словарный запас
@@ -87,9 +101,9 @@ const Home = () => {
                 </BackGroundBlock> */}
 
             {/* <SectionBlock>
-                    <Header size="m">
+                    <Head size="m">
                         Тренируй память и развивай английский
-                    </Header>
+                    </Head>
                     <SectionBlock row>
                         <Paragraph>
                             <ClockCircleOutlined className={s.icon} />В любое
@@ -106,15 +120,13 @@ const Home = () => {
                     </SectionBlock>
                 </SectionBlock> */}
             <SectionBlock backgroundColor="lightgrey">
-                <Header size="s">Запоминаем английские слова</Header>
+                <Head size="s">Запоминаем английские слова</Head>
                 <Paragraph>
                     Чтобы добавить карточку, впишите слово в форму ниже на
                     русском или английском языке в соответствующее поле ввода и
                     нажмите "Добавить слово"
                 </Paragraph>
-                <TranslationForm
-                    handleAddItem={handleAddItem}
-                />
+                <TranslationForm handleAddItem={handleAddItem} />
                 <CardList
                     wordArr={wordArr}
                     onSpeech={onSpeech}
@@ -123,9 +135,9 @@ const Home = () => {
             </SectionBlock>
             <BackGroundBlock backgroundImg={footerBackground}>
                 <FooterBlock>
-                    <Header opacity uppercase size="s">
+                    <Head opacity uppercase size="s">
                         english language
-                    </Header>
+                    </Head>
                     <Button onClick={handleSignOut}>Выйти</Button>
                 </FooterBlock>
             </BackGroundBlock>

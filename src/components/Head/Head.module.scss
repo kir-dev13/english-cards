@@ -1,0 +1,37 @@
+.root {
+    // color: white;
+    padding: 24px 0;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    // display: inline-block;
+    flex-basis: 100%;
+
+    // width: 100%;
+}
+
+.sizeXL {
+    font-size: 68px;
+}
+.sizeL {
+    font-size: 60px;
+}
+.sizeM {
+    font-size: 52px;
+}
+.sizeS {
+    font-size: 44px;
+}
+.sizeXS {
+    font-size: 36px;
+}
+
+.whiteColor {
+    color: white;
+}
+.opacity {
+    opacity: 0.2;
+}
+.uppercase {
+    text-transform: uppercase;
+}

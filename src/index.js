@@ -2,7 +2,7 @@ import React from "react";
 import ReactDom from "react-dom";
 import App from "./App";
 import Firebase from "./services/firebase";
-import firebaseContext from "./context/firebaseContext";
+import { firebaseContext } from "./context/context";
 
 import "./index.css";
 
