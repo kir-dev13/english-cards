@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import s from "./Card.module.scss";
 import cl from "classnames";
 import {
     CheckSquareOutlined,
     DeleteOutlined,
     SoundOutlined,
 } from "@ant-design/icons";
+import s from "./Card.module.scss";
 
-const Card = ({ id, eng, rus, onDeleted, onSpeech }) => {
+const Card = ({ id, eng, rus, onDelete, onSpeech }) => {
     const [stateCard, setStateCard] = useState({
         done: false,
         isRemembered: false,
@@ -42,8 +42,8 @@ const Card = ({ id, eng, rus, onDeleted, onSpeech }) => {
         });
     };
 
-    const handleDeletedClick = () => {
-        onDeleted(id);
+    const handleDeleteClick = () => {
+        onDelete(id);
     };
 
     const handleSpeech = () => {
@@ -72,7 +72,7 @@ const Card = ({ id, eng, rus, onDeleted, onSpeech }) => {
 
                 <DeleteOutlined
                     className={s.icon}
-                    onClick={handleDeletedClick}
+                    onClick={handleDeleteClick}
                 />
 
                 <SoundOutlined className={s.icon} onClick={handleSpeech} />

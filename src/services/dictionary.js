@@ -1,6 +1,6 @@
 const API_KEY = process.env.REACT_APP_API_KEY;
 
-const getTranslateWord = async (text, lang = "en-ru") => {
+const requestTranslate = async (text, lang = "en-ru") => {
     const res = await fetch(
         `https://reactmarathon-api.netlify.app/api/translate?text=${text}&lang=${lang}`,
         {
@@ -13,4 +13,4 @@ const getTranslateWord = async (text, lang = "en-ru") => {
     return body;
 };
 
-export default getTranslateWord;
+export default requestTranslate;

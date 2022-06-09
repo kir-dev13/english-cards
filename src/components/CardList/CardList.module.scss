@@ -7,16 +7,6 @@
     justify-items: start;
     flex-basis: content;
 }
-.form {
-    // margin-bottom: 24px;
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    * {
-        margin-bottom: 15px;
-        padding: 5px;
-    }
-}
 
 @media (max-width: 768px) {
     .root {
